@@ -25,11 +25,11 @@ public class PlayerMovement : MonoBehaviour
     private float jumpsAvailable = 0;
     private float jumpsMax = 2;
 
-    //[SerializeField] private GameObject model;          // a reference to the model (inside the Player gameObject)
-    //private float rotateToFaceMovementSpeed = 5f;       // the speed to rotate our model towards the movement vector
+    [SerializeField] private GameObject model;          // a reference to the model (inside the Player gameObject)
+    private float rotateToFaceMovementSpeed = 5f;       // the speed to rotate our model towards the movement vector
 
-    //[SerializeField] private Camera cam;                // a reference to the main camera
-    //private float rotateToFaceAwayFromCameraSpeed = 5f; // the speed to rotate our Player to align with the camera view.
+    [SerializeField] private Camera cam;                // a reference to the main camera
+    private float rotateToFaceAwayFromCameraSpeed = 5f; // the speed to rotate our Player to align with the camera view.
 
 
     private void Start()
@@ -55,6 +55,14 @@ public class PlayerMovement : MonoBehaviour
 
         // convert from local to global coordinates
         movement = transform.TransformDirection(movement);
+
+        // Rotate model to face movement direction (if movement exists)
+        if (movement.magnitude > 0)
+        {
+            RotateModelToFaceMovement(movement);
+            RotatePlayerToFaceAwayFromCamera();
+        }
+
         movement *= speed;
 
         // calculate yVelocity and add it to the player's movement vector
@@ -94,26 +102,26 @@ public class PlayerMovement : MonoBehaviour
     private void RotateModelToFaceMovement(Vector3 moveDirection)
     {
         // Determine the rotation needed to face the direction of movement (only XZ movement - ignore Y)
-        //Quaternion newRotation = Quaternion.LookRotation(new Vector3(moveDirection.x, 0f, moveDirection.z));
+        Quaternion newRotation = Quaternion.LookRotation(new Vector3(moveDirection.x, 0f, moveDirection.z));
 
         // set the model's rotation
         //model.transform.rotation = newRotation;
 
         // replace the above line with this one to enable smoothing
-        //model.transform.rotation = Quaternion.Slerp(model.transform.rotation, newRotation, rotateToFaceMovementSpeed * Time.deltaTime);
+        model.transform.rotation = Quaternion.Slerp(model.transform.rotation, newRotation, rotateToFaceMovementSpeed * Time.deltaTime);
     }
 
     // set the player's Y rotation (yaw) to be aligned with the camera's Y rotation
     private void RotatePlayerToFaceAwayFromCamera()
     {
         // isolate the camera's Y rotation
-        //Quaternion camRotation = Quaternion.Euler(0, cam.transform.rotation.eulerAngles.y, 0);
+        Quaternion camRotation = Quaternion.Euler(0, cam.transform.rotation.eulerAngles.y, 0);
 
         // set the player's rotation
         //transform.rotation = camRotation;
         
         // replace the above line with this one to enable smoothing
-        //transform.rotation = Quaternion.Slerp(transform.rotation, camRotation, rotateToFaceAwayFromCameraSpeed * Time.deltaTime);
+        transform.rotation = Quaternion.Slerp(transform.rotation, camRotation, rotateToFaceAwayFromCameraSpeed * Time.deltaTime);
     }
 
 
