@@ -6,6 +6,9 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField]
+    private Animator anim;
+
+    [SerializeField]
     private CharacterController cc;
 
     private float speed = 9.0f;         // XZ movement speed
@@ -47,6 +50,9 @@ public class PlayerMovement : MonoBehaviour
         // ensure diagonal movement doesn't exceed horiz/vert movement speed
         movement = Vector3.ClampMagnitude(movement, 1.0f);
 
+        //set the animator's velocity parameter based on our XZ movement
+        anim.SetFloat("velocity", movement.magnitude);
+
         // convert from local to global coordinates
         movement = transform.TransformDirection(movement);
         movement *= speed;
@@ -64,9 +70,13 @@ public class PlayerMovement : MonoBehaviour
         // give upward y Velocity if we jumped
         if(Input.GetButtonDown("Jump") && jumpsAvailable > 0)
         {
+            anim.SetTrigger("jump");
             yVelocity = initialJumpVelocity;
             jumpsAvailable--;
         }
+        //tell the animator it we are grounded or nol
+        anim.SetBool("isGrounded", cc.isGrounded);
+
         movement.y = yVelocity;
 
         movement *= Time.deltaTime; // make all movement processor independent
