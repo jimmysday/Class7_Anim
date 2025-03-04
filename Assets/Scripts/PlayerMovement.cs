@@ -52,6 +52,8 @@ public class PlayerMovement : MonoBehaviour
 
         //set the animator's velocity parameter based on our XZ movement
         anim.SetFloat("velocity", movement.magnitude);
+        Debug.Log(transform.position.y);
+        anim.SetFloat("yposition", transform.position.y);
 
         // convert from local to global coordinates
         movement = transform.TransformDirection(movement);
