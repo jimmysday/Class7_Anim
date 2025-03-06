@@ -24,6 +24,7 @@ public class PlayerMovement : MonoBehaviour
 
     private float jumpsAvailable = 0;
     private float jumpsMax = 2;
+    float terminalVelocity = -30;
 
     [SerializeField] private GameObject model;          // a reference to the model (inside the Player gameObject)
     private float rotateToFaceMovementSpeed = 5f;       // the speed to rotate our model towards the movement vector
@@ -53,7 +54,7 @@ public class PlayerMovement : MonoBehaviour
         //set the animator's velocity parameter based on our XZ movement
         anim.SetFloat("velocity", movement.magnitude);
         Debug.Log(transform.position.y);
-        anim.SetFloat("yposition", transform.position.y);
+        
 
         // convert from local to global coordinates
         movement = transform.TransformDirection(movement);
@@ -87,7 +88,15 @@ public class PlayerMovement : MonoBehaviour
         //tell the animator it we are grounded or nol
         anim.SetBool("isGrounded", cc.isGrounded);
 
+        // make it so that y doesn't get any lower than terminal velocity
+        if( yVelocity < terminalVelocity)
+        {
+            anim.SetBool("isFalling", true);
+            yVelocity = terminalVelocity;
+        }
+
         movement.y = yVelocity;
+        anim.SetFloat("yposition", yVelocity);
 
         movement *= Time.deltaTime; // make all movement processor independent
 
@@ -95,8 +104,8 @@ public class PlayerMovement : MonoBehaviour
         cc.Move(movement);  
 
         // rotate the player
-        Vector3 rotation = Vector3.up * rotationSpeed * Time.deltaTime * Input.GetAxis("Mouse X");
-        transform.Rotate(rotation);
+        //Vector3 rotation = Vector3.up * rotationSpeed * Time.deltaTime * Input.GetAxis("Mouse X");
+        //transform.Rotate(rotation);
     }
 
 
@@ -129,15 +138,15 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        //// make the source 1.5 units up from the player's pivot point (at their feet)
-        //Vector3 source = transform.position + Vector3.up * 1.5f;
+        // make the source 1.5 units up from the player's pivot point (at their feet)
+        Vector3 source = transform.position + Vector3.up * 1.5f;
 
-        //// visualize the rotation of the Model
-        //Gizmos.color = Color.blue;
-        //Gizmos.DrawLine(source, source + (model.transform.forward * 3f));
+        // visualize the rotation of the Model
+        Gizmos.color = Color.blue;
+        Gizmos.DrawLine(source, source + (model.transform.forward * 3f));
 
-        //// visualize the rotation of the Player
-        //Gizmos.color = Color.red;
-        //Gizmos.DrawLine(source, source + (transform.forward * 3f));
+        // visualize the rotation of the Player
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(source, source + (transform.forward * 3f));
     }
 }
